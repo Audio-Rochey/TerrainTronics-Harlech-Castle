@@ -1,7 +1,6 @@
 # TerrainTronics-Harlech-Castle-Demo with TableTop Witchcraft
 
-**https://youtu.be/fndEPuhKIHA**
-
+[![Tutorial Video](https://img.youtube.com/vi/Vtr_8sZsUh0/0.jpg)](https://www.youtube.com/watch?v=Vtr_8sZsUh0)
 
 ## Introduction
 This folder was put together to provide the details and materials for you to clone the terrain that John over at tabletop witchcraft put together in his Awesome video linked above.
@@ -31,6 +30,27 @@ The terrain uses a common programmable microcontroller board, along with some ac
 
 I covered a few of these tools in this youtube video: https://www.youtube.com/watch?v=xsE8RqOkm7I
 
+## Harlech board versions and pinouts
+
+There are two versions of the Harlech board. As of 5/21/2021, we have inventory of both. Main difference was a small change in pinout (a software change) and movement of all componenets to the top side of the circuit board to ease manufacturing.
+Revisions are based on a X.Y naming structure. X being a major design change (different chips etc) and Y being a small layout change. 
+To date, There is a V1.0 and V1.1 - the differences are in the table below.
+
+![Version 1.0 of the Harlech Board](https://i.imgur.com/nufWZZa.png)![Basic Pinout of the Wemos D1 - with thanks to randomnerdtutorials.com](https://i2.wp.com/randomnerdtutorials.com/wp-content/uploads/2019/05/ESP8266-WeMos-D1-Mini-pinout-gpio-pin.png?w=715&quality=100&strip=all&ssl=1)
+
+| Pin | Notes about pin | Harlech PG1p0 | Harlech PG1p1 |
+|-|-|-|-|
+| Features |  | 8out LED | 8out LED |
+| D0 | No PWM possible | SPARE | KEEPALIVE |
+| D1 | Often used as SCL | I2C-SCL | I2C-SCL |
+| D2 | Often used as SDA | I2C-SDA | I2C-SDA |
+| D3 | No Pulldown allowed | KEEPALIVE | SPARE (optional OE) |
+| D4 | LED. No Pulldown Allowed | !OE | SPARE |
+| D5 | Often used for SPI-CLK | SPICLK | SPICLK |
+| D6 | Often used for SPI-COPI | SPI-COPI | SPI-COPI |
+| D7 | Often used for SPI-CIPO | SPARE | !OE |
+| D8 | No Pullup Allowed (Fail Boot). | SPI-CS | SPI-CS |
+
 ## Recipe
 
 - Solder short female headers on to your Wemos D1 Mini
@@ -59,4 +79,39 @@ They go in the following order. Channel one is the pair nearest to the Terrain T
 This is a bit of a hack. Yes. I admit it.
 You'll need to wire wrap the following pins from the OLED to the specic pins on the Wemos D1's pins that go up and down through the stack.
 
+![Wiring 3V3, GND and D1/D2 to the BAttery Shield](https://i.imgur.com/tARDRie.png)![Wire Wrap tool to connect from the display](https://i.imgur.com/RURUpVC.png)
+
+| Pin on Display| Pin on the Stack|
+|-|-|
+| 3v3| 3V3|
+| GND| GND|
+| SDA| D2|
+| SCL| D1|
+
+### 3D Printed Items
+
+![3d printed front panel for the OLED](https://i.imgur.com/GEACved.png)
+	
+Thingiverse has all my creations on it. You can find the one for the display at: [https://www.thingiverse.com/thing:4861981](https://www.thingiverse.com/thing:4861981 "Grimdark Terrain Panel for SSD1306")
+
+
+## Downloading the software to the wemos.
+
+Now that you've verified the hardware connectors are all working, it's time to download the software to the WEMOS D1. The Wemos board has non-volative memory onboard, so it remembers the code even when you unplug power.
+
+Downloading the code is covered in the video. 
+
+**REMEMBER** you need to download the image that is connected with your version of Harlech. In this folder there are two BIN files one for version 1p0 of Harlech, the other for version 1p1 of Harlech. Be sure to download the right one for the hardare you have.
+
+[![Tutorial Video](https://img.youtube.com/vi/Vtr_8sZsUh0/0.jpg)](https://youtu.be/Vtr_8sZsUh0?t=221)
+
+
+## Power
+
+Johns implimentation used a Wemos Battery shield and a small lithium ion battery pack. This works well, but makes your terrain a giant USB battery pack! John had to change the connector on the battery to the XH connector on his battery shield. An inconvenience, but not a show stopper.
+It may be easier for many beginners to simply use a USB Battery, the kind used by consumers to charge their smartphones.
+
+## Questions?
+
+Please post on the youtube video, or publish an issue in this github page and I'll do what I can to help! :)
 
