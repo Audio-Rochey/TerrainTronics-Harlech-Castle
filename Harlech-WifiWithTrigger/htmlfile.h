@@ -17,11 +17,12 @@ String html_1 = R"=====(
   <div id='main'>
     <h3>Terrain Tronics Wifi Controllers</h3>
     <div id='content'>
-      <p id='LED_status'>Development Date 6/29/2021</p>
+      <p id='LED_status'>Development Date 6/29/2022</p>
             <p>Designed for Harlech PG1.1</p>
-      <button id='BTN_LEDA'class="button">Turn on Candles only</button>
-      <button id='BTN_LEDB'class="button">Turn on Red Lights only </button>
-      <button id='BTN_LEDC'class="button">All lights off</button>
+      <button id='BTN_LEDA'class="button">Trigger Sound Effect board</button>
+      <button id='BTN_LEDB'class="button">Lights On</button>
+      <button id='BTN_LEDC'class="button">Lights Off</button>
+      <button id='BTN_LEDD'class="button">Run LED Pattern</button>
     </div>
     <br />
    </div>
@@ -37,7 +38,7 @@ String html_1 = R"=====(
   document.getElementById('BTN_LEDA').addEventListener('click', buttonAClicked);
   function buttonAClicked()
   {   
-    sendText('0');
+    sendText('t');
   }
   document.getElementById('BTN_LEDB').addEventListener('click', buttonBClicked);
   function buttonBClicked()
@@ -48,6 +49,11 @@ String html_1 = R"=====(
   function buttonCClicked()
   {   
     sendText('2');
+  }
+  document.getElementById('BTN_LEDD').addEventListener('click', buttonDClicked);
+  function buttonDClicked()
+  {   
+    sendText('0');
   }
   function sendText(data)
   {
