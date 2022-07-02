@@ -110,6 +110,7 @@ There's a plugin for the streamdeck called "Web Requests" - very easy to intall 
 
 
 ![GUI screenshot](https://i.imgur.com/AB7BDIp.png)
+![Example feedback from Arduino Serial Monitor](https://i.imgur.com/AB7BDIp.png)
 
 
 I simply set the URL to: ws://192.168.1.70:81/  (my network gave the address 192.168.1.70 to the Wemos D1)
