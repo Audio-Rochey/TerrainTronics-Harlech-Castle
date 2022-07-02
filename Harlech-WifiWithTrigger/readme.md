@@ -79,7 +79,8 @@ below it are a bunch of if/else statements. There are a few examples here. We'll
           analogWrite(OE, 0); // This is for brightness control. 0 is full brightness, 255 is the lowest... BUT this will stop your trigger functions working very well.
           delay(5);
       }
-      ```
+
+```
 
 
 
@@ -100,7 +101,8 @@ This one switches of the triggers on, then off again. This should be enough to t
           analogWrite(OE, 0);
           delay(5);
       }
-      ```
+      
+```
 
 
 # Bonus Points - using a Stream Deck!
@@ -108,10 +110,7 @@ This one switches of the triggers on, then off again. This should be enough to t
 Well done for reading all the way to the bottom.
 There's a plugin for the streamdeck called "Web Requests" - very easy to intall in their GUI. The Authors name is Adrian Mullings, if that helps!
 
-
 ![GUI screenshot](https://i.imgur.com/AB7BDIp.png)
-![Example feedback from Arduino Serial Monitor](https://i.imgur.com/AB7BDIp.png)
-
 
 I simply set the URL to: ws://192.168.1.70:81/  (my network gave the address 192.168.1.70 to the Wemos D1)
 Then set the message to be 0 or 1 or t or whatever I want the message to be.
