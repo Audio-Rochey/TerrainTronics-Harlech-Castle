@@ -1,4 +1,4 @@
-#  Terrain Tronics Harlech Exxample Code
+#  Terrain Tronics Harlech Example Code
 ## Wifi Setup with LED's and General Purpose triggers.
 
 **7/1/2022 - A very early version of this document. Let's call it version 0.1**
