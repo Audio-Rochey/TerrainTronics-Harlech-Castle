@@ -60,7 +60,7 @@ Here, there's a function (subroutine) that checks what text was recieved. Search
 
 below it are a bunch of if/else statements. There are a few examples here. We'll cover the easy ones first! :)
 
-**Please note, where you see 0b00000001 - each 0 or 1 is connected to a pin. 8 pins, 8 0's and 1's. The least significant 0/1 is the highest output pin on the board.**
+> **Please note, where you see 0b00000001 - each 0 or 1 is connected to a pin. 8 pins, 8 0's and 1's. The least significant 0/1 is the highest output pin on the board.**
 
 This one switches of the triggers on, then off again. This should be enough to trigger audio playback from an off the shelf module that looks for changing edges.
 
