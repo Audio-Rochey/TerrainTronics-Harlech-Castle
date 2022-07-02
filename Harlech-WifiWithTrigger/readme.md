@@ -24,7 +24,7 @@ You'll also need a few additional libraries. WifiManager, WebSocketServer and Do
 
 The first time you download the code, the board will reset and then setup it's own WiFi network for you to connect from your phone/computer, to teach it about your home network. **If you use the serial monitor that is built into the Arduino Development tools, you can watch information come back from the board. Useful to see what's being sent to the board and what's going on with the server!**
 
-![Example feedback from Arduino Serial Monitor](https://i.imgur.com/OuVWuEm.png)
+![Example feedback from Arduino Serial Monitor](https://i.imgur.com/yCybhII.png)
 
 
 Once you've configured the board for your wifi network, you'll need to find out which IP address it was given. this can be done using your wifi routers internal webpage, or looking the data on the arduino monitor. you should be able to find the server on your network at http://TerrainTronics01/
