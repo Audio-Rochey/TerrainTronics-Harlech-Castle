@@ -108,7 +108,9 @@ This one switches of the triggers on, then off again. This should be enough to t
 Well done for reading all the way to the bottom.
 There's a plugin for the streamdeck called "Web Requests" - very easy to intall in their GUI. The Authors name is Adrian Mullings, if that helps!
 
+
 ![GUI screenshot](https://i.imgur.com/AB7BDIp.png)
+
 
 I simply set the URL to: ws://192.168.1.70:81/  (my network gave the address 192.168.1.70 to the Wemos D1)
 Then set the message to be 0 or 1 or t or whatever I want the message to be.
