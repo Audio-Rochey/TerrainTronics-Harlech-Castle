@@ -40,7 +40,7 @@ To make a new button pop up on your GUI, then you need to add an additional line
       <button id='BTN_LEDB'class="button">Lights On</button>
       <button id='BTN_LEDC'class="button">Lights Off</button>
       <button id='BTN_LEDD'class="button">Run LED Pattern</button>
-      ```
+```
 
 
 That handles the bit that's shown, then we need to teach it what do when one of those buttons is pressed... so a little further down at: 
@@ -50,7 +50,7 @@ That handles the bit that's shown, then we need to teach it what do when one of 
   {   
     sendText('1');
   }
-  ```
+ ```
 
 What that code is telling your browser is that when button B is clicked ("light on"), then run a mini program, or function, called "buttonBClicked", which conveniently is int he following lines. In this case, it sends text of "1".
 
