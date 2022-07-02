@@ -58,7 +58,7 @@ Here, there's a function (subroutine) that checks what text was recieved. Search
 
 below it are a bunch of if/else statements. There are a few examples here. We'll cover the easy ones first! :)
 
-`else if (payload[0] == 't')
+```else if (payload[0] == 't')
       {
           Serial.println("Trigger"); 
           digitalWrite(latchPin, LOW); // Tells the LED driver IC to listen
@@ -70,7 +70,7 @@ below it are a bunch of if/else statements. There are a few examples here. We'll
           digitalWrite(latchPin, HIGH); // Tells the LED driver to latch
           analogWrite(OE, 0);
           delay(5);
-      }`
+      }```
 
 
 
