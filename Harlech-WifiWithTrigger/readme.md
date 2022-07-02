@@ -33,19 +33,45 @@ From there, a html file is brought up on your mobile or your pc with a few butto
 
 The code uses *websockets* to communicate from your browser (whether it's a phone or a pc, or anything else). Websockets are a streamlined way of communicating with servers. The htmlfile.h describes the file that is sent to your browser when you connect. 
 To make a new button pop up on your GUI, then you need to add an additional line to this text.
-'<button id='BTN_LEDA'class="button">Trigger Sound Effect board</button>
+`<button id='BTN_LEDA'class="button">Trigger Sound Effect board</button>
       <button id='BTN_LEDB'class="button">Lights On</button>
       <button id='BTN_LEDC'class="button">Lights Off</button>
-      <button id='BTN_LEDD'class="button">Run LED Pattern</button>'
+      <button id='BTN_LEDD'class="button">Run LED Pattern</button>`
 
 
 That handles the bit that's shown, then we need to teach it what do when one of those buttons is pressed... so a little further down at: 
 
-'document.getElementById('BTN_LEDB').addEventListener('click', buttonBClicked);
+`document.getElementById('BTN_LEDB').addEventListener('click', buttonBClicked);
   function buttonBClicked()
   {   
     sendText('1');
-  }'
+  }`
+
+What that code is telling your browser is that when button B is clicked ("light on"), then run a mini program, or function, called "buttonBClicked", which conveniently is int he following lines. In this case, it sends text of "1".
+
+So to add a button, add a button, make it... BTN_LED**E** for instance, and make sure you add a document.getElementById bit too.
+
+Now lets look over at HarlechC1p1-BasicWifi
+
+Here, there's a function (subroutine) that checks what text was recieved. Search for a line of code that says 
+`void webSocketEvent(byte num, WStype_t type, uint8_t * payload, size_t length)`
+
+below it are a bunch of if/else statements. There are a few examples here. We'll cover the easy ones first! :)
+
+`else if (payload[0] == 't')
+      {
+          Serial.println("Trigger"); 
+          digitalWrite(latchPin, LOW); // Tells the LED driver IC to listen
+          shiftOut(dataPin, clockPin, LSBFIRST, (currentStaticHarlechOutputs | 0b00000001)); // bitwise OR to set the bits high.
+          digitalWrite(latchPin, HIGH); // Tells the LED driver to latch
+          delay (200); // add a 200mS delay.
+          digitalWrite(latchPin, LOW); // Tells the LED driver IC to listen
+          shiftOut(dataPin, clockPin, LSBFIRST, (currentStaticHarlechOutputs & 0b11111110)); // bitwise AND to set those pins back to currentStatic
+          digitalWrite(latchPin, HIGH); // Tells the LED driver to latch
+          analogWrite(OE, 0);
+          delay(5);
+      }`
+
 
 
 
