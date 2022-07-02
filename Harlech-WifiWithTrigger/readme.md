@@ -7,11 +7,15 @@
 
 The code in this example is designed to run on a Wemos D1 Processor, developed in the arduino environment, with an assembled Terrain Tronics Harlech Castle board on it.
 
+![Regular assembled Harlech](https://i.imgur.com/RxitY0K.png)
+
 The Harlech board is designed to run with 8 different LED output that can be controlled from the Wemos D1 Mini. In this case, a few of the channels near the top (nearest the antenna) have been replaced with a pull up resistor of 10KOhm. 
 
 Harlech behaves like a serial to parallel connection, but rather than sending each pin to a high voltage and having the lower pin (the cathode of the LED) have a shared GND, This method is called "high side swithing". Harlech castle works by having a shared high voltage, then using "lower side switches" to switch on and controle the LED's. (known as low side swithing). Thought of in another way, Harlech switches on ground when you send a 1, pulling the voltage at it's pin to ground.
 
 this is commonly done with mechanical switches as it means that one side of the switch is connected to the microcontroller, and the other side can pick up a ground signal from anywhere on the circuit board. easier than trying to find a high voltage!
+
+![Modified board for triggers](https://i.imgur.com/Bqthz3f.jpg)
 
 The pins in the center strip of the Harlech board are your output pins. The strip of pins closest to the IC are either virtually disconnected, or connected to ground (through a fixed current).
 
@@ -50,7 +54,7 @@ That handles the bit that's shown, then we need to teach it what do when one of 
   {   
     sendText('1');
   }
- ```
+```
 
 What that code is telling your browser is that when button B is clicked ("light on"), then run a mini program, or function, called "buttonBClicked", which conveniently is int he following lines. In this case, it sends text of "1".
 
@@ -109,6 +113,7 @@ This one switches of the triggers on, then off again. This should be enough to t
 
 Well done for reading all the way to the bottom.
 There's a plugin for the streamdeck called "Web Requests" - very easy to intall in their GUI. The Authors name is Adrian Mullings, if that helps!
+
 
 ![GUI screenshot](https://i.imgur.com/AB7BDIp.png)
 
