@@ -24,7 +24,7 @@ You'll also need a few additional libraries. WifiManager, WebSocketServer and Do
 
 The first time you download the code, the board will reset and then setup it's own WiFi network for you to connect from your phone/computer, to teach it about your home network. **If you use the serial monitor that is built into the Arduino Development tools, you can watch information come back from the board. Useful to see what's being sent to the board and what's going on with the server!**
 
-!(https://i.imgur.com/OuVWuEm.png)
+![Example feedback from Arduino Serial Monitor](https://i.imgur.com/OuVWuEm.png)
 
 
 Once you've configured the board for your wifi network, you'll need to find out which IP address it was given. this can be done using your wifi routers internal webpage, or looking the data on the arduino monitor. you should be able to find the server on your network at http://TerrainTronics01/
@@ -108,7 +108,7 @@ This one switches of the triggers on, then off again. This should be enough to t
 Well done for reading all the way to the bottom.
 There's a plugin for the streamdeck called "Web Requests" - very easy to intall in their GUI. The Authors name is Adrian Mullings, if that helps!
 
-!(https://i.imgur.com/AB7BDIp.png)
+![GUI screenshot](https://i.imgur.com/AB7BDIp.png)
 
 I simply set the URL to: ws://192.168.1.70:81/  (my network gave the address 192.168.1.70 to the Wemos D1)
 Then set the message to be 0 or 1 or t or whatever I want the message to be.
