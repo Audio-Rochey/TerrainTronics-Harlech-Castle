@@ -1,9 +1,9 @@
 #  Terrain Tronics Harlech Exxample Code
 ## Wifi Setup with LED's and General Purpose triggers.
 
-**7/1/2022**
+**7/1/2022 - A very early version of this document. Let's call it version 0.1**
 
-A very early version of this document. Let's call it version 0.1
+> Any questions on how this code works can be posted here in github in the issues.
 
 The code in this example is designed to run on a Wemos D1 Processor, developed in the arduino environment, with an assembled Terrain Tronics Harlech Castle board on it.
 
@@ -23,6 +23,9 @@ To learn how to download/compile code to your Harlech board, watch this video: h
 You'll also need a few additional libraries. WifiManager, WebSocketServer and Double Reset Detector are the ones that come to mind.
 
 The first time you download the code, the board will reset and then setup it's own WiFi network for you to connect from your phone/computer, to teach it about your home network. **If you use the serial monitor that is built into the Arduino Development tools, you can watch information come back from the board. Useful to see what's being sent to the board and what's going on with the server!**
+
+!(https://i.imgur.com/OuVWuEm.png)
+
 
 Once you've configured the board for your wifi network, you'll need to find out which IP address it was given. this can be done using your wifi routers internal webpage, or looking the data on the arduino monitor. you should be able to find the server on your network at http://TerrainTronics01/
 
@@ -62,6 +65,26 @@ below it are a bunch of if/else statements. There are a few examples here. We'll
 
 > **Please note, where you see 0b00000001 - each 0 or 1 is connected to a pin. 8 pins, 8 0's and 1's. The least significant 0/1 is the highest output pin on the board.**
 
+### Switching things ON or OFF from a button.
+
+```else if (payload[0] == '1')
+      {
+          
+          PatternRun.attach_ms(0, NULL);  // Stop any pattern running in the background.
+          Serial.println("All Lights On"); // Send a debug message on the arduino monitor
+          digitalWrite(latchPin, LOW); // Tells the LED driver IC to listen
+          currentStaticHarlechOutputs = 0b11110000; // set 4 of the lower LED's to ON. (you'll likely do this)
+          shiftOut(dataPin, clockPin, LSBFIRST, currentStaticHarlechOutputs);
+          digitalWrite(latchPin, HIGH); // Tells the LED driver 
+          analogWrite(OE, 0); // This is for brightness control. 0 is full brightness, 255 is the lowest... BUT this will stop your trigger functions working very well.
+          delay(5);
+      }
+      ```
+
+
+
+### Trigger Switcher
+
 This one switches of the triggers on, then off again. This should be enough to trigger audio playback from an off the shelf module that looks for changing edges.
 
 ```else if (payload[0] == 't')
@@ -78,3 +101,15 @@ This one switches of the triggers on, then off again. This should be enough to t
           delay(5);
       }
       ```
+
+
+# Bonus Points - using a Stream Deck!
+
+Well done for reading all the way to the bottom.
+There's a plugin for the streamdeck called "Web Requests" - very easy to intall in their GUI. The Authors name is Adrian Mullings, if that helps!
+
+!(https://i.imgur.com/AB7BDIp.png)
+
+I simply set the URL to: ws://192.168.1.70:81/  (my network gave the address 192.168.1.70 to the Wemos D1)
+Then set the message to be 0 or 1 or t or whatever I want the message to be.
+
