@@ -259,7 +259,7 @@ void L3ResetUpdateCall(unsigned long currentMillis){
       // ON and OFF Switching. 
     //Serial.println("L3ResetUpdateCall");
     L3previousMillis = currentMillis;
-    L3interval = 500; // changes the flickering rate. every 3 seconds current.
+    L3interval = 100; // changes the flickering rate. every 3 seconds current.
 
     if (L3DIR == LOW) {
         //Serial.println("ON");
