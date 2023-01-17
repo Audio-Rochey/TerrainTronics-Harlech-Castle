@@ -65,33 +65,33 @@ int OE = D7;
 
 
 int L1ResetCount; // used for internal counter PWM of L1
-int L1Count; // used for internacl counter PWM of L1
-bool L1DIR; // Are we breathing UP or DOWN?
-int L1Min = 400 ; // Lowest Brightness.
+int L1Count; // used for internal counter PWM of L1
+bool L1DIR; // Are we breathing UP or DOWN? Used to track previous status of counter or LED.
+int L1Min = 400 ; // Lowest Brightness. The means the LED would be ON for 1 in X updates. (e.g. 100 would be 1% Duty cycles)
 unsigned long L1previousMillis = 0;  // will store last time LED brightness was updated
-long L1interval = 100; // Update Rate between changes in brightness
+long L1interval = 100; // Update delay between changes in brightness
 
 
 int L2ResetCount; // used for PWM of L2
-int L2Count; // used for PWM of L2
+int L2Count; // used for PWM of L2 (counter, how many to go until we get to 0, when the LED switches on?)
 bool L2DIR; // Are we breathing UP or DOWN?
-int L2Min = 50 ; // Lowest Brightness.
+int L2Min = 50 ; // Lowest Brightness. The means the LED would be ON for 1 in X updates. (e.g. 100 would be 1% Duty cycles)
 unsigned long L2previousMillis = 0;  // will store last time LED was updated
-long L2interval = 15;  //Update Rate
+long L2interval = 15;  //Update delay
 
 int L3ResetCount; // used for PWM of L3
 int L3Count; // used for PWM of L3
-bool L3DIR = LOW; // Are we breathing UP or DOWN?
-int L3Min = 200 ; // Lowest Brightness.
+bool L3DIR = LOW; // Are we breathing UP or DOWN? Used to track previous status of counter or LED.
+int L3Min = 200 ; // Lowest Brightness. The means the LED would be ON for 1 in X updates. (e.g. 100 would be 1% Duty cycles)
 unsigned long L3previousMillis = 0;  // will store last time LED was updated
-long L3interval = 15;  //Update Rate
+long L3interval = 15;  //Update delay
 
 int L4ResetCount; // used for PWM of L4
 int L4Count; // used for PWM of L4
-bool L4DIR = LOW; // Are we breathing UP or DOWN?
-int L4Min = 200 ; // Lowest Brightness.
+bool L4DIR = LOW; // Are we breathing UP or DOWN? Used to track previous status of counter or LED.
+int L4Min = 200 ; // Lowest Brightness. The means the LED would be ON for 1 in X updates. (e.g. 100 would be 1% Duty cycles)
 unsigned long L4previousMillis = 0;  // will store last time LED was updated
-long L4interval = 15;  //Update Rate
+long L4interval = 15;  //Update delay
 
 
 //=======================================================================
@@ -256,18 +256,19 @@ void L2ResetUpdateCall(unsigned long currentMillis){
 }
 
 void L3ResetUpdateCall(unsigned long currentMillis){
-      // ON and OFF Switching. 
+    // ON and OFF Switching.
+    // L3DIR in this mode simply tracks the previous state. Low means it WAS off (and when it runs, it'll go "HIGH") 
     //Serial.println("L3ResetUpdateCall");
     L3previousMillis = currentMillis;
     L3interval = 100; // changes the flickering rate. every 3 seconds current.
 
     if (L3DIR == LOW) {
         //Serial.println("ON");
-        L3ResetCount = 0; // full on brighness
-        L3DIR = HIGH;
-     } else {
+        L3ResetCount = 0; // switch it to full on brighness and wait 100mS.
+        L3DIR = HIGH;     // Then next time it rolls around it'll jump to the next else statement.
+     } else {   // so this is if L3DIR == High.
        //Serial.println("OFF");
-       L3ResetCount = L3Min;
+       L3ResetCount = L3Min; // There's no such thing as OFF, just a duty cycle so low the eye can't see it.
        L3DIR = LOW;
      }
      //Serial.println(L3ResetCount);
@@ -279,15 +280,15 @@ void L4ResetUpdateCall(unsigned long currentMillis){
     L4previousMillis = currentMillis;
     
 
-    if (L4DIR == LOW) {
+    if (L4DIR == LOW) { // If the LED is OFF.
         //Serial.println("ON");
         L4interval = random(3000,5000); // delay between flickers (some time between 3 and 5 seconds)
         if (random(0,3) == 0){
-          L4interval = 25;
+          L4interval = 25;              // one in 4 chance that we could get a double re-eval of the flicker.
         }
         L4ResetCount = 0; // full on brighness
-        L4DIR = HIGH;
-     } else {
+        L4DIR = HIGH; // LED ON
+     } else {           // If the LED in ON. 
        //Serial.println("OFF");
        L4interval = random(20,50); // delay between changes in brightness
        L4ResetCount = random(1,L4Min); // the actual brightness.
