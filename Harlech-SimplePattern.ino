@@ -2,7 +2,7 @@
 //  Name    : Harlech Castle PG1.0 Simple Patterns              //
 //  Author  : Dafydd Roche                                      //
 //  Date    : 2/8/2021                                         //
-//  Version : 1.1                                               //
+//  Version : 1.2                                               //
 //  Notes   : This code runs on the Wemos D1 Mini.              //
 //            This code does not use any of the Wifi            //
 //              Capabilities                                    //
@@ -32,7 +32,8 @@
  * 
  * TerrainTronics
  * 
- * 
+ * UPDATE LOG
+ * Feb 15th 2024 -- Updated KeepAlive Pin and OE pin to use the right pins on Harlech 1.1
  */
 #include <ESP8266WiFi.h> // This allows the modem to be powered off, saving 40mA!
 
