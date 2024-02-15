@@ -40,7 +40,8 @@
 #include <Ticker.h>  //Ticker Library
 Ticker USBBank;
 int USBBankState = 0;
-const int keepAlive = D3;// The Keepalive pin for USB Power Banks is D3.
+const int keepAlive = D0;// HARLECH 1.1 The Keepalive pin for USB Power Banks is D0.
+//const int keepAlive = D3;// HARLECH 1.0 The Keepalive pin for USB Power Banks is D3.
 const int kaTimeOn = 1; // Time to switch the keep alive circuit on.
 const int kaTimeOff = 8; // Time to switch the keep alive circuit off for.
 
@@ -57,7 +58,8 @@ int latchPin = D8;
 int clockPin = D5;
 int dataPin = D6;
 // Set the output enable pin. This can be rapidly PWM'd.
-int OE = D4;
+// int OE = D4; // D4 is only for Harlech 1.0
+int OE = D7; // D7 is the default on Harlech 1.1, or it can be changed to D3.
 
 
 
