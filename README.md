@@ -1,6 +1,7 @@
 # TerrainTronics-Harlech Castle
 8ch LED Driver for Configurable and Programmable Effects
-![Cilgerran Castle Intro Picture](https://github.com/user-attachments/assets/df3579ee-54e9-4fa5-a58d-67ecf89b8970)
+
+**Add Picture**
 
 ## Why it exists and the problems it fixes
 Harlech is an easy to configure (or code and program) driver for 8 regular LEDs. It talks to the Arduino compatible Wemos D1 Mini below it, takes it's control message and switches the output on and off.
@@ -14,7 +15,7 @@ Lots of code examples are here, but you can also download to the Wemos D1, code 
 
 ### Boards
 
-![VerticalStack](https://github.com/user-attachments/assets/601e2180-1c62-4092-af63-614ac53a7921)
+**Add Picture** 
 
 A wemos D1 mini acts as the brain. It treats the Harlech Castle board like a shift register - a 74HC595. Any Arduino examples you have with those boards should work.
 You'll need a Wemos D1 mini and solder pins of sockets pointing up, then the opposite gender connectors from the Harlech Castle down. You may have to solder the 16 pin header on the Harlech. The Left side of that header is for the Cathode (negative) side of the LED, the right side is for the Anode (the long leg of the LED!)
@@ -29,20 +30,15 @@ Alternatively, if you're mainly familiar with a wire wrapping tool - that works 
 
 
 ## Cool use cases
-With it's ability drive 6 high power led's along with 2 more LEDs/ DC Motor from a smart source, existing code examples are available for:
-
-### DMX Controller
-
-[Code Link to come]
-
-I'm addicted to the epic work done by Seb at Atmoseeker ([LINK](https://www.youtube.com/@Atmoseeker)). He controls all of his environmental lights using a stage lighting protocol called DMX. Many ceiling stage lights use DMX as their control method, along with a Ethernet/Wifi-variation called E.131. 
-DMX is designed for stage production where you have scenes, so you can do things like change from night to day. Imagine being able to change your ceiling lights from daylight to purples and blues and then having your tabletop buildings switch on their inhouse lights etc!
-Example Code in this github, and pre-programmed version available from https://audio-rochey.github.io/ESP-Web-Tools/
+Driving up to 8 LED's in parallel means that it can be used like a conwy castle board on steroids. By changing the code written on the Wemos D1 mini's, interactive lights can be done as well. Code examples available here are:
+- Patterns, similar to a player piano
+- 8ch of independent candle flicker
+- Responsive LED's (e.g. depending on a sensor)
 
 
 ### Web Controller
 
-Similar to the DMX controller. This one makes a website on your wifi you can visit.
+This one makes a website on your wifi you can visit.
 
 ## What if you Need inputs?
 The board is designed to use as many of it's pins as outputs. D1 and D2 are available to use as INPUT, without any modification. Just make sure that you're signals are 3.3V. In addition D3 can be used if you solder the solder jumper to D7. A0 (Analog Input) is connected to the upper control knob.
@@ -53,7 +49,7 @@ Crossed out pins cannot be used as an input, as they have various functions at p
 ## Hacks
 
 ### Adding a remote control
-D1 or D2 can be used with a 1383 IR Reciever. There's code examples, make sure you tell it which pin you're using! :)
+D1 or D2 can be used with a 1838 IR Reciever. There's code examples, make sure you tell it which pin you're using! :)
 
 ### Power Efficiency: Switch off Wifi if you aren't going to use it!
 
@@ -70,7 +66,7 @@ These lines drop the current consumption from about 80mA to 14mA.
 
 ## How do I buy it?
 
-Cilgerran Castle board comes as both a single board (with connectors) and as a kit, with additional components to make a system.
+Harlech board comes as a preassembled board that only needs headers for the pins soldered.
 
 ### What's in the standalone board?
 - 1x Harlech Castle Board
