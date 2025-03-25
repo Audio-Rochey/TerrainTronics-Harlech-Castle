@@ -21,9 +21,13 @@ A wemos D1 mini acts as the brain. It treats the Harlech Castle board like a shi
 You'll need a Wemos D1 mini and solder pins of sockets pointing up, then the opposite gender connectors from the Harlech Castle down. You may have to solder the 16 pin header on the Harlech. The Left side of that header is for the Cathode (negative) side of the LED, the right side is for the Anode (the long leg of the LED!)
 
 ### Dont forget to pick your OE pin!
+![harlech OE](https://github.com/user-attachments/assets/75b23354-1ef6-4cb9-a819-4b2383ed7cc9)
 
 The latest Harlech boards allow you to use D3 or D7 from your Wemos D1 mini as a OE (output enable) - otherwise known in serial communication as "Chip select".
- 
+
+Harlech boards have a 3 way jumper, allowing you to connect the middle pad up to D3, or down to D7
+![harlech OE board](https://github.com/user-attachments/assets/57fc10c7-783e-4552-923b-75b468a5e074)
+
 
 ### Wiring
 
