@@ -20,6 +20,11 @@ Lots of code examples are here, but you can also download to the Wemos D1, code 
 A wemos D1 mini acts as the brain. It treats the Harlech Castle board like a shift register - a 74HC595. Any Arduino examples you have with those boards should work.
 You'll need a Wemos D1 mini and solder pins of sockets pointing up, then the opposite gender connectors from the Harlech Castle down. You may have to solder the 16 pin header on the Harlech. The Left side of that header is for the Cathode (negative) side of the LED, the right side is for the Anode (the long leg of the LED!)
 
+### Dont forget to pick your OE pin!
+
+The latest Harlech boards allow you to use D3 or D7 from your Wemos D1 mini as a OE (output enable) - otherwise known in serial communication as "Chip select".
+ 
+
 ### Wiring
 
 ![Cable Connector Output](https://github.com/user-attachments/assets/994369ca-0bff-40fa-ae99-cdc0f2c93ae0)
