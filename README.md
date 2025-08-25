@@ -37,6 +37,19 @@ I used a 2x8 IDC connector ( [Amazon](https://a.co/d/hbylqzd) ) and ([Amazon](ht
 Doing so allows you build your terrain to a single connector then connect them in one go to the Harlech board. 
 Alternatively, if you're mainly familiar with a wire wrapping tool - that works too! - just a little less flexibility later on! :)
 
+### Pinout
+
+| LED Output Header Pin | Wemos D1 Pin          |
+| --------------------- |-----------------------|
+| KeepAlive             | D0 |
+| Serial Clock          | D5 |
+| Serial Data           | D6 |
+| nOutputEnable         | D7 (default) or D3 (optional) |
+| Latch                 | D8 |
+| SCL (I2C)             | D1 |
+| SDA (I2C)             | D2 |
+| Spare Pin             | D4 |
+
 
 ## Cool use cases
 Driving up to 8 LED's in parallel means that it can be used like a conwy castle board on steroids. By changing the code written on the Wemos D1 mini's, interactive lights can be done as well. Code examples available here are:
