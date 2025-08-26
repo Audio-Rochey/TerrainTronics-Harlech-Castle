@@ -6,6 +6,13 @@ A tiny Wi‑Fi–configurable web app and WebSocket controller for TerrainTronic
 
 ---
 
+## 🎥 Demo videos
+
+- Demo 1 — Harlech WiFiMgr + Dynamic Scenes: https://youtu.be/c0mubq7XFXU
+- Demo 2 — Stream Deck / WebSocket control: https://youtu.be/dTnSNvuOWLM
+
+---
+
 ## ✨ Features
 
 - **Zero‑app setup** with Wi‑Fi Manager captive portal (connect to its own Wi‑Fi on first boot, then enter your Wi‑Fi credentials).
@@ -66,13 +73,6 @@ Use **Configure WiFi** in the portal to set SSID/password. To reconfigure later,
 - Use memorable endpoints: `http://harlech‑stage.local/`, `ws://harlech‑stage.local:82/`.
 - Avoid DHCP/OS auto‑renames and keep bookmarks stable.
 - Make Stream Deck / Companion actions easier to read and maintain.
-
----
-
-## 🎥 Demo videos
-
-- Demo 1 — Harlech WiFiMgr + Dynamic Scenes: https://youtu.be/c0mubq7XFXU
-- Demo 2 — Stream Deck / WebSocket control: https://youtu.be/dTnSNvuOWLM
 
 ---
 
