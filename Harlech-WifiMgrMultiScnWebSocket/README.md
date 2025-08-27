@@ -1,4 +1,4 @@
-# Harlech WiFiMgr + WebSockets
+# Harlech WiFiMgr + Streamdeck (WebSockets)
 
 A tiny Wi‑Fi–configurable web app and WebSocket controller for TerrainTronics’ **Harlech Castle** LED boards (ESP8266 Wemos D1 Mini). Create lighting scenes in the browser, then switch scenes instantly from the site **or** any WebSocket client (e.g., Stream Deck via a helper plugin).
 
