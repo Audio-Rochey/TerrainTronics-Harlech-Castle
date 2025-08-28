@@ -1,7 +1,7 @@
 /*
 ======================================================================
   TerrainTronics — Harlech Castle LED Controller (ESP8266 / Wemos D1 mini)
-  Firmware: Harlech_Milestone_E_Cleaned_v16.ino
+  Firmware: Harlech_Milestone_E_Cleaned_v17_patched.ino
 ======================================================================
 */
 // Overview
@@ -67,6 +67,10 @@ Notes
 #include <vector>
 #include <WebSocketsServer.h>
 
+// ---- Forward declarations (fix compile order dependencies) ----
+static String macNoColons();
+static String stableUUID();
+
 // ---------------- User-configurable knobs ----------------
 static const bool OUTPUT_ACTIVE_LOW = false;
 static const int  CONFIG_LED_PIN        = LED_BUILTIN;   // D4 onboard
@@ -128,6 +132,12 @@ struct FlickerState{ uint8_t level; uint8_t target; uint32_t nextTarget; } flick
 uint32_t lastPwmTick = 0;
 uint8_t  pwmStep     = 0;
 uint8_t  duty[8]     = {0,0,0,0,0,0,0,0};
+
+// ----- Health logging knobs/state -----
+static const uint32_t HEALTH_PERIOD_MS = 180000; // every ~3 minutes (tweak to taste)
+static uint32_t lastHealthLog = 0;
+volatile uint16_t wsClientCount = 0; // updated via WebSocket events
+static String gUUID; // persistent UUID string used by SSDP and description.xml
 
 // ---------------- Utilities ----------------
 static inline uint8_t gamma2(uint8_t x){
@@ -436,7 +446,18 @@ static void handleDynState(){
 
 // ----- WebSocket handler (apply-only minimal) -----
 void onWsEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t len) {
+  if (type == WStype_CONNECTED) {
+    wsClientCount++;
+    Serial.printf("[WS] connected #%u (clients=%u)\n", num, (unsigned)wsClientCount);
+    return;
+  }
+  if (type == WStype_DISCONNECTED) {
+    if(wsClientCount) wsClientCount--;
+    Serial.printf("[WS] disconnected #%u (clients=%u)\n", num, (unsigned)wsClientCount);
+    return;
+  }
   if (type != WStype_TEXT) return;
+
   int p = -1;
   if (len == 1 && payload[0] >= '0' && payload[0] <= '2') {
     p = payload[0] - '0';                    // "0" / "1" / "2"
@@ -490,6 +511,24 @@ static void printStatus(){
   Serial.printf("RSSI: %d dBm\n", WiFi.RSSI());
   Serial.printf("Heap: %u bytes\n", ESP.getFreeHeap());
   Serial.println(F("======================\n"));
+}
+
+// Periodic health logging to Serial (compact one-liner)
+static void logHealth(){
+  bool portal = wm.getConfigPortalActive();
+  const char* mode = (WiFi.getMode()==WIFI_AP) ? "AP" : "STA";
+  IPAddress ip = (WiFi.getMode()==WIFI_AP)? WiFi.softAPIP() : WiFi.localIP();
+  unsigned long uptime = millis()/1000UL;
+  uint8_t scene = getActiveScene();
+  Serial.printf("[HEALTH] mode=%s ip=%s rssi=%d heap=%u portal=%s ws=%u scene=%u up=%lus\n",
+                mode,
+                ip.toString().c_str(),
+                WiFi.RSSI(),
+                ESP.getFreeHeap(),
+                portal?"on":"off",
+                (unsigned)wsClientCount,
+                (unsigned)scene,
+                uptime);
 }
 
 
@@ -611,38 +650,45 @@ hr{border-color:#333}
 </style>)");
   }
 
+  // Ensure WiFiManager home (AP & STA) shows our custom buttons
+  {
+    std::vector<const char*> menu = {"wifi","info","param","custom","sep","restart","exit"};
+    wm.setMenu(menu);
+    wm.setCustomMenuHTML("<form action='/led' method='get'><button class='button' style='min-width:200px'>Configure LEDs</button></form>\
+<form action='/dynled' method='get' style='margin-top:8px'><button class='button' style='min-width:200px'>Dynamic Scenes</button></form>\
+<form action='/host' method='get' style='margin-top:8px'><button class='button' style='min-width:200px'>Change Hostname</button></form>");
+  }
+
+  // Prepare persistent UUID for SSDP/description.xml
+  gUUID = stableUUID();
+
   // Connect (or open AP portal). After connecting, start WM portal in STA mode at ROOT
   bool ok = wm.autoConnect(host.c_str());
   if(!ok){
     Serial.println(F("[WiFi] autoConnect failed; AP portal likely active."));
-  } else {
-    Serial.print(F("[WiFi] connected, IP: ")); Serial.println(WiFi.localIP());
 
-    // Add a WiFiManager-styled button to open our LED UI from the home page
-    {
-      std::vector<const char*> menu = {"wifi","info","param","custom","sep","restart","exit"};
-      wm.setMenu(menu);
-      wm.setCustomMenuHTML("<form action='/led' method='get'><button class='button' style='min-width:200px'>Configure LEDs</button></form>\
-<form action='/dynled' method='get' style='margin-top:8px'><button class='button' style='min-width:200px'>Dynamic Scenes</button></form>\
-<form action='/host' method='get' style='margin-top:8px'><button class='button' style='min-width:200px'>Change Hostname</button></form>");
-    }
-
-    // Start WiFiManager's Web Portal in STA mode; it serves at ROOT (/)
-    wm.startWebPortal();
+    // Attach our routes to the AP portal as well
     g_server = wm.server.get();
     if(g_server){
+      g_server->on("/health", HTTP_GET, [](){ g_server->send(200, "application/json", "{\"ok\":true}"); });
       g_server->on("/led", HTTP_GET, handleRoot);
       g_server->on("/led/save", HTTP_POST, handleSave);
+      g_server->on("/host", HTTP_GET, handleHost);
+      g_server->on("/host/save", HTTP_POST, handleHostSave);
+      g_server->on("/dynled", HTTP_GET, handleDynLed);
+      g_server->on("/dynled/save", HTTP_POST, handleDynSave);
+      g_server->on("/dynled/apply", HTTP_POST, handleDynApply);
+      g_server->on("/dynled/state", HTTP_GET, handleDynState);
       g_server->on("/description.xml", HTTP_GET, [](){
-        String ipS = WiFi.localIP().toString();
+        IPAddress ip = (WiFi.getMode()==WIFI_AP)? WiFi.softAPIP() : WiFi.localIP();
+        String ipS = ip.toString();
         String friendly = WiFi.hostname().length() ? WiFi.hostname() : String("Harlech Controller");
-        String xml;
-        xml.reserve(1024);
+        String xml; xml.reserve(1024);
         xml  = F("<?xml version=\"1.0\"?>");
         xml += F("<root xmlns=\"urn:schemas-upnp-org:device-1-0\">");
         xml += F("<specVersion><major>1</major><minor>0</minor></specVersion>");
         xml += F("<device>");
-        xml += F("<deviceType>urn:schemas-upnp-org:device:Basic:1</deviceType>");
+        xml += F("<deviceType>upnp:rootdevice</deviceType>");
         xml += F("<friendlyName>"); xml += friendly; xml += F("</friendlyName>");
         xml += F("<manufacturer>TerrainTronics</manufacturer>");
         xml += F("<manufacturerURL>http://terraintronics.com</manufacturerURL>");
@@ -650,7 +696,45 @@ hr{border-color:#333}
         xml += F("<modelNumber>1.0</modelNumber>");
         xml += F("<serialNumber>"); xml += String(ESP.getChipId(), HEX); xml += F("</serialNumber>");
         xml += F("<presentationURL>http://"); xml += ipS; xml += F("/</presentationURL>");
-        xml += F("<UDN>uuid:"); xml += WiFi.macAddress(); xml += F("</UDN>");
+        xml += F("<UDN>uuid:"); xml += gUUID; xml += F("</UDN>");
+        xml += F("</device></root>");
+        g_server->send(200, "text/xml", xml);
+      });
+      // Start WS in AP mode too (for local tools)
+      ws.begin(); ws.onEvent(onWsEvent);
+    }
+  } else {
+    Serial.print(F("[WiFi] connected, IP: ")); Serial.println(WiFi.localIP());
+    Serial.print(F("[HTTP] Browse STA portal at: http://")); Serial.print(WiFi.localIP()); Serial.println(F("/"));    // (menu injected earlier for both AP & STA)
+
+    // Start WiFiManager's Web Portal in STA mode; it serves at ROOT (/) 
+    wm.startWebPortal();
+    g_server = wm.server.get();
+    if(g_server){      // Lightweight health probe for quick sanity checks
+      g_server->on("/health", HTTP_GET, [](){ g_server->send(200, "application/json", "{\"ok\":true}"); });
+      // IMPORTANT: Do NOT override "/" — let WiFiManager serve its home page (with our custom buttons) in both STA and AP modes.
+
+      g_server->on("/led", HTTP_GET, handleRoot);
+      g_server->on("/led/save", HTTP_POST, handleSave);
+      g_server->on("/description.xml", HTTP_GET, [](){
+        IPAddress ip = (WiFi.getMode()==WIFI_AP)? WiFi.softAPIP() : WiFi.localIP();
+        String ipS = ip.toString();
+        String friendly = WiFi.hostname().length() ? WiFi.hostname() : String("Harlech Controller");
+        String xml;
+        xml.reserve(1024);
+        xml  = F("<?xml version=\"1.0\"?>");
+        xml += F("<root xmlns=\"urn:schemas-upnp-org:device-1-0\">");
+        xml += F("<specVersion><major>1</major><minor>0</minor></specVersion>");
+        xml += F("<device>");
+        xml += F("<deviceType>upnp:rootdevice</deviceType>");
+        xml += F("<friendlyName>"); xml += friendly; xml += F("</friendlyName>");
+        xml += F("<manufacturer>TerrainTronics</manufacturer>");
+        xml += F("<manufacturerURL>http://terraintronics.com</manufacturerURL>");
+        xml += F("<modelName>"); xml += PORTAL_TITLE; xml += F("</modelName>");
+        xml += F("<modelNumber>1.0</modelNumber>");
+        xml += F("<serialNumber>"); xml += String(ESP.getChipId(), HEX); xml += F("</serialNumber>");
+        xml += F("<presentationURL>http://"); xml += ipS; xml += F("/</presentationURL>");
+        xml += F("<UDN>uuid:"); xml += gUUID; xml += F("</UDN>");
         xml += F("</device></root>");
         g_server->send(200, "text/xml", xml);
       });
@@ -664,8 +748,39 @@ hr{border-color:#333}
       g_server->on("/dynled/apply", HTTP_POST, handleDynApply);
       g_server->on("/dynled/state", HTTP_GET, handleDynState);
       // WebSocket for scene switching
-      ws.begin();
-      ws.onEvent(onWsEvent);
+      ws.begin();      ws.onEvent(onWsEvent);
+    }
+    else {
+      // Rare: if WiFiManager did not spin up a server in STA mode, start our own as a fallback
+      static ESP8266WebServer fallback(80);
+      g_server = &fallback;
+            // Fallback home (only if WiFiManager didn't start a server). Provide a simple landing with the same custom buttons.
+      g_server->on("/", HTTP_GET, [](){
+        String html; html.reserve(2048);
+        html += F("<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1,user-scalable=no'>");
+        html += "<title>" + String(PORTAL_TITLE) + " • Home</title>";
+        html += F("<style>*{box-sizing:border-box}html,body{margin:0;padding:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#222;color:#fff}.wrap{display:flex;justify-content:center;padding:24px}.container{width:100%;max-width:520px}.card{background:#111;border:1px solid #333;border-radius:8px;padding:16px;box-shadow:0 1px 0 rgba(0,0,0,.4)}h2{margin:0 0 8px 0;font-weight:600}h3{margin:0 0 16px 0;font-weight:500;color:#bbb}.button{display:inline-block;border:0;border-radius:4px;background:#1fa3ec;color:#fff;padding:10px 16px;text-decoration:none;cursor:pointer}.button:hover{background:#0f78a0}.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.row .button{flex:1 1 180px;text-align:center}</style>");
+        html += F("</head><body><div class='wrap'><div class='container'><div class='card'>");
+        html += "<h2>" + String(PORTAL_TITLE) + "</h2><h3>Home</h3>";
+        html += F("<div class='row'>");
+        html += F("<form action='/led' method='get'><button class='button' type='submit'>Configure LEDs</button></form>");
+        html += F("<form action='/dynled' method='get'><button class='button' type='submit'>Dynamic Scenes</button></form>");
+        html += F("<form action='/host' method='get'><button class='button' type='submit'>Change Hostname</button></form>");
+        html += F("</div><p style='color:#aaa;font-size:12px;margin-top:8px'>WiFiManager portal fallback page.</p>");
+        html += F("</div></div></div></body></html>");
+        g_server->send(200, "text/html", html);
+      });
+      g_server->on("/health", HTTP_GET, [](){ g_server->send(200, "application/json", "{\"ok\":true}"); });
+      g_server->on("/led", HTTP_GET, handleRoot);
+      g_server->on("/led/save", HTTP_POST, handleSave);
+      g_server->on("/host", HTTP_GET, handleHost);
+      g_server->on("/host/save", HTTP_POST, handleHostSave);
+      g_server->on("/dynled", HTTP_GET, handleDynLed);
+      g_server->on("/dynled/save", HTTP_POST, handleDynSave);
+      g_server->on("/dynled/apply", HTTP_POST, handleDynApply);
+      g_server->on("/dynled/state", HTTP_GET, handleDynState);
+      g_server->begin();
+      Serial.println(F("[HTTP] Fallback web server started on port 80"));
     }
 
     // SSDP announce
@@ -676,11 +791,14 @@ hr{border-color:#333}
     SSDP.setManufacturerURL("http://terraintronics.com");
     SSDP.setModelName(PORTAL_TITLE);
     SSDP.setModelNumber("1.0");
-    SSDP.setModelURL(("http://" + WiFi.localIP().toString()).c_str());
+    {
+      String abs = String("http://") + WiFi.localIP().toString() + "/"; // absolute URL preferred by Windows
+      SSDP.setModelURL(abs.c_str());
+    }
     SSDP.setURL("/");
-    SSDP.setDeviceType("upnp:rootdevice"); // Commonly shown in Windows Network
+    SSDP.setDeviceType("upnp:rootdevice"); // advertise as root device (Explorer-friendly)
     SSDP.setSerialNumber(String(ESP.getChipId(), HEX));
-    // SSDP.setModelURL("/"); // (kept per-IP ModelURL set above)
+    SSDP.setUUID(gUUID.c_str()); // ensure USN matches <UDN> in description.xml
     if (!SSDP.begin()) {
       Serial.println(F("SSDP failed to start"));
     } else {
@@ -693,7 +811,11 @@ hr{border-color:#333}
       Serial.println(F("[mDNS] started"));
     }
   }
+  // One-shot health log on boot
+  logHealth();
+  lastHealthLog = millis();  // schedule next tick ~HEALTH_PERIOD_MS later
 }
+
 
 void loop(){
   wm.process();         // keep WM portal responsive (AP or STA)
@@ -717,4 +839,10 @@ void loop(){
   updateFlicker();
   updatePWM();
   ws.loop();
+
+  // Periodic health log to Serial
+  if (millis() - lastHealthLog >= HEALTH_PERIOD_MS) {
+    lastHealthLog = millis();
+    logHealth();
+  }
 }
