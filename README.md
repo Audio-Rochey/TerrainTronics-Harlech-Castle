@@ -37,6 +37,14 @@ I used a 2x8 IDC connector ( [Amazon](https://a.co/d/hbylqzd) ) and ([Amazon](ht
 Doing so allows you build your terrain to a single connector then connect them in one go to the Harlech board. 
 Alternatively, if you're mainly familiar with a wire wrapping tool - that works too! - just a little less flexibility later on! :)
 
+Pinout for the LED connectors is as follows:
+
+![HarlechOutputPins](https://github.com/user-attachments/assets/10631c9f-0993-4745-9aa2-5ade17cc45f5)
+
+On a ribbon, it goes OUTPUTx, 5V, OUTPUT6, 5V etc.
+![HarlechRibbonZoom](https://github.com/user-attachments/assets/4fc4e0c3-6a04-46cf-bb44-58c9ce80e59b)
+
+
 ### Pinout
 
 | LED Output Header Pin | Wemos D1 Pin          |
@@ -102,6 +110,9 @@ Version 1P1 schematics are in this folder. Look for the PDF.
 
 # TerrainTronics-Harlech-Castle
 Firmware and Schematics for the Harlech Castle 8ch LED controller
+
+<img width="1158" height="794" alt="Harlech1p1Schematic" src="https://github.com/user-attachments/assets/c443bb45-5eed-4e94-b8f9-81be8c26a454" />
+
 
 https://youtu.be/fndEPuhKIHA
 
